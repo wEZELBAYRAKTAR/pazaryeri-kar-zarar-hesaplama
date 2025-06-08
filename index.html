@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WENTRIUM Komisyon Hesaplama Aracı</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #00c7b3; 
+            --background-color: #0f172a; 
+            --secondary-color: #94a3b8; 
+            --text-color: #e2e8f0;
+            --glass-bg: rgba(30, 41, 59, 0.5);
+            --glass-border: rgba(148, 163, 184, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --success-color: #22c55e; 
+            --warning-color: #f59e0b; 
+            --danger-color: #ef4444;  
+            --transition-speed: 0.4s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            background-image: radial-gradient(var(--glass-border) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            padding: 2.5rem;
+            display: flex;
+            gap: 2.5rem;
+            overflow: hidden;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .form-column, .results-column {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(25%);
+            color: var(--secondary-color);
+            transition: color var(--transition-speed);
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all var(--transition-speed);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+        
+        .input-group:focus-within i {
+             color: var(--primary-color);
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 199, 179, 0.4);
+        }
+
+        .form-control::placeholder {
+            color: var(--secondary-color);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            margin-top: 1rem;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 199, 179, 0.3);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        #results {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        #results.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .result-item {
+            background: var(--glass-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid transparent;
+            transition: all var(--transition-speed);
+        }
+
+        .result-item:hover {
+            transform: translateX(5px);
+            border-left-color: var(--primary-color);
+        }
+
+        .result-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--secondary-color);
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .result-item.highlight {
+            background: linear-gradient(90deg, rgba(0, 199, 179, 0.15), rgba(0, 199, 179, 0.05));
+            border-left-color: var(--primary-color);
+        }
+        
+        .result-item.highlight .result-value {
+             font-size: 1.5rem;
+             text-shadow: 0 0 10px rgba(0, 199, 179, 0.5);
+        }
+
+        #profitMessage {
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            margin-top: 1rem;
+            transition: all var(--transition-speed);
+        }
+        
+        .profit-message-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #fff;
+        }
+        
+        .profit-icon {
+            font-size: 1.5rem;
+        }
+
+        .status-success { background-color: rgba(34, 197, 94, 0.2); border-left: 5px solid var(--success-color); }
+        .status-warning { background-color: rgba(245, 158, 11, 0.2); border-left: 5px solid var(--warning-color); }
+        .status-danger { background-color: rgba(239, 68, 68, 0.2); border-left: 5px solid var(--danger-color); animation: shake 0.5s ease-in-out; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @media (max-width: 900px) {
+            .calculator-container {
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 2rem;
+            }
+            .form-column, .results-column {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <div class="form-column">
+            <h2 class="section-title"><i class="fa-solid fa-file-invoice-dollar"></i>Hemen Hesapla!</h2>
+            <form id="commissionForm">
+                <div class="input-group">
+                    <label for="marketplace"><i class="fa-solid fa-store"></i> Pazar Yeri</label>
+                    <select class="form-select" id="marketplace" required>
+                        <option value="">Seçim Yap</option>
+                        <option value="trendyol">Trendyol</option>
+                        <option value="hepsiburada">Hepsiburada</option>
+                        <option value="n11">N11</option>
+                        <option value="amazon">Amazon</option>
+                        <option value="ciceksepeti">ÇiçekSepeti</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="category"><i class="fa-solid fa-shapes"></i> Kategori</label>
+                    <select class="form-select" id="category" required>
+                        <option value="">Seçim Yap</option>
+                        <option value="elektronik">Elektronik</option>
+                        <option value="giyim">Giyim</option>
+                        <option value="ev">Ev & Yaşam</option>
+                        <option value="kozmetik">Kozmetik</option>
+                        <option value="spor">Spor & Outdoor</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="productPrice"><i class="fa-solid fa-tag"></i> Ürün Satış Fiyatı (KDV Dahil)</label>
+                    <input type="number" step="0.01" class="form-control" id="productPrice" placeholder="Örn: 249.90" required>
+                </div>
+                <div class="input-group">
+                    <label for="productCost"><i class="fa-solid fa-receipt"></i> Ürün Alış Fiyatı (KDV Dahil)</label>
+                    <input type="number" step="0.01" class="form-control" id="productCost" placeholder="Örn: 120.00" required>
+                </div>
+                <div class="input-group">
+                    <label for="shippingCost"><i class="fa-solid fa-truck-fast"></i> Kargo Ücreti (KDV Dahil)</label>
+                    <input type="number" step="0.01" class="form-control" id="shippingCost" value="0">
+                </div>
+                <button type="submit" class="calculate-btn"><i class="fa-solid fa-calculator"></i> Hesapla</button>
+            </form>
+        </div>
+
+        <div class="results-column">
+            <h2 class="section-title"><i class="fa-solid fa-chart-pie"></i>Hesaplama Sonuçları</h2>
+            <div id="results">
+                <div class="result-item">
+                    <span class="result-label"><i class="fa-solid fa-hand-holding-dollar"></i>Komisyon Tutarı</span>
+                    <span class="result-value" id="commissionAmount">0.00 TL</span>
+                </div>
+                 <div class="result-item">
+                    <span class="result-label"><i class="fa-solid fa-percent"></i>Komisyon Oranı</span>
+                    <span class="result-value" id="commissionRate">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><i class="fa-solid fa-truck"></i>Kargo Gideri</span>
+                    <span class="result-value" id="shippingCostDisplay">0.00 TL</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label"><i class="fa-solid fa-file-invoice"></i>KDV Tutarı</span>
+                    <span class="result-value" id="vatAmount">0.00 TL</span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="result-label"><i class="fa-solid fa-sack-dollar"></i>Net Kâr</span>
+                    <span class="result-value" id="netProfit">0.00 TL</span>
+                </div>
+                <div id="profitMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const commissionForm = document.getElementById('commissionForm');
+            const resultsDiv = document.getElementById('results');
+            const profitMessageDiv = document.getElementById('profitMessage');
+
+            const marketplaceRates = {
+                trendyol: { elektronik: 0.15, giyim: 0.22, ev: 0.20, kozmetik: 0.18, spor: 0.14 },
+                hepsiburada: { elektronik: 0.12, giyim: 0.20, ev: 0.18, kozmetik: 0.25, spor: 0.16 },
+                n11: { elektronik: 0.10, giyim: 0.19, ev: 0.17, kozmetik: 0.23, spor: 0.15 },
+                amazon: { elektronik: 0.11, giyim: 0.18, ev: 0.16, kozmetik: 0.21, spor: 0.17 },
+                ciceksepeti: { elektronik: 0.20, giyim: 0.25, ev: 0.28, kozmetik: 0.30, spor: 0.23 }
+            };
+
+            const VAT_RATE = 0.20; 
+
+            commissionForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const marketplace = document.getElementById('marketplace').value;
+                const category = document.getElementById('category').value;
+                const price = parseFloat(document.getElementById('productPrice').value);
+                const cost = parseFloat(document.getElementById('productCost').value);
+                const shippingCost = parseFloat(document.getElementById('shippingCost').value) || 0;
+
+                if (!marketplace || !category || isNaN(price) || isNaN(cost)) {
+                    console.error("Form alanları eksik veya hatalı.");
+                    return;
+                }
+                
+                const commissionRate = marketplaceRates[marketplace][category];
+                if (commissionRate === undefined) {
+                     console.error("Komisyon oranı bulunamadı.");
+                     return;
+                }
+
+                const commissionAmount = price * commissionRate;
+                
+                const priceWithoutVat = price / (1 + VAT_RATE);
+                const costWithoutVat = cost / (1 + VAT_RATE);
+                const vatAmount = (priceWithoutVat - costWithoutVat) * VAT_RATE;
+
+                const netProfit = price - cost - commissionAmount - shippingCost - vatAmount;
+                
+                updateResultsUI({
+                    commissionRate,
+                    commissionAmount,
+                    shippingCost,
+                    vatAmount,
+                    netProfit
+                });
+                
+                updateProfitMessage(netProfit, price);
+            });
+            
+            function updateResultsUI(data) {
+                document.getElementById('commissionAmount').textContent = formatCurrency(data.commissionAmount);
+                document.getElementById('commissionRate').textContent = `${(data.commissionRate * 100).toFixed(1)}%`;
+                document.getElementById('shippingCostDisplay').textContent = formatCurrency(data.shippingCost);
+                document.getElementById('vatAmount').textContent = formatCurrency(data.vatAmount);
+                document.getElementById('netProfit').textContent = formatCurrency(data.netProfit);
+                
+                resultsDiv.classList.add('visible');
+            }
+
+            function updateProfitMessage(netProfit, price) {
+                const profitPercentage = (price > 0) ? (netProfit / price) * 100 : 0;
+                let message = '';
+                let icon = '';
+                let statusClass = '';
+
+                if (netProfit > 0) {
+                    if (profitPercentage >= 25) {
+                        message = 'Mükemmel! Bu ürün çok kârlı.';
+                        icon = '🎉';
+                        statusClass = 'status-success';
+                    } else {
+                        message = 'İyi bir kâr marjı, harika!';
+                        icon = '👍';
+                        statusClass = 'status-success';
+                    }
+                } else if (netProfit <= 0) {
+                     message = 'Zarar ediyorsun! Fiyatlandırmayı gözden geçir.';
+                     icon = '🚨';
+                     statusClass = 'status-danger';
+                }
+                
+                profitMessageDiv.className = '';
+                profitMessageDiv.classList.add(statusClass);
+
+                profitMessageDiv.innerHTML = `
+                    <div class="profit-message-content">
+                        <span class="profit-icon">${icon}</span>
+                        <span class="profit-text">${message}</span>
+                    </div>`;
+            }
+
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('tr-TR', {
+                    style: 'currency',
+                    currency: 'TRY'
+                }).format(amount);
+            }
+        });
+    </script>
+
+</body>
+</html>
