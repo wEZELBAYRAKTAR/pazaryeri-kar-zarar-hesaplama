@@ -1,5 +1,8 @@
 # WENTRIUM PAZARYERİ KAR ZARAR HESAPLAMA
 
+![image](https://github.com/user-attachments/assets/d2c8f7e1-a06a-42c9-80ea-bb55f51aad79)
+
+
 🚀 Karşınızda: WENTRIUM Komisyon Hesaplama Aracı! (Tamamen Ücretsiz ve Açık Kaynak!)
 Merhaba değerli WENTRIUM topluluğu!
 
